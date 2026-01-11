@@ -1,2 +1,28 @@
-.env
+# python
 __pycache__/
+
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+
+# env
+.env
+.venv/
+venv/
+ENV/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# data
+data/
+*.db
+*.sqlite
+*.sqlite3
+logs/
+
+# audio
+*.wav
+*.mp3
