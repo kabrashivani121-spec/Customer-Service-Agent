@@ -1,46 +1,37 @@
-from __future__ import annotations
-from langdetect import detect, LangDetectException
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+# src/i18n.py
 
-LANG_NAME = {
-    "en": "English",
-    "es": "Spanish",
-    "fr": "French",
-    "de": "German",
-    "hi": "Hindi",
-    "pt": "Portuguese",
-    "zh-cn": "Chinese (Simplified)",
-    "zh-tw": "Chinese (Traditional)",
-    "ja": "Japanese",
-    "ko": "Korean",
-    "ar": "Arabic",
-}
+from langdetect import detect
+from openai import OpenAI
+from config import OPENAI_MODEL
+
+client = OpenAI()
+
 
 def detect_language(text: str) -> str:
     try:
         return detect(text)
-    except LangDetectException:
+    except Exception:
         return "en"
 
-def translate(text: str, target_lang: str, model: str) -> str:
-    """Translate with the chat model to keep deps minimal.
 
-    target_lang should be a BCP-47-ish short code like 'en', 'es', etc.
+def translate(text: str, target_lang: str) -> str:
     """
-    if not text.strip():
-        return text
+    Translates text to target_lang using OpenAI.
+    If target_lang == 'en', returns text unchanged.
+    """
     if target_lang == "en":
-        # If you want always-English internal processing, your caller will send en here.
-        pass
+        return text
 
-    prompt = ChatPromptTemplate.from_template(
-        "Translate the text to {target}. Keep meaning, tone, and formatting. "
-        "Return only the translation.
-
-Text:
-{text}"
+    prompt = (
+        f"Translate the following text to {target_lang}. "
+        "Return only the translated text.\n\n"
+        f"Text: {text}"
     )
-    llm = ChatOpenAI(model=model, temperature=0)
-    out = (prompt | llm).invoke({"target": LANG_NAME.get(target_lang, target_lang), "text": text}).content
-    return out.strip()
+
+    response = client.chat.completions.create(
+        model=OPENAI_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+
+    return response.choices[0].message.content.strip()
