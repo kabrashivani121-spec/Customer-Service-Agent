@@ -8,6 +8,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 # Models (you can change these without touching code)
 CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o-mini")
+OPENAI_MODEL = CHAT_MODEL  # ✅ alias for modules that expect OPENAI_MODEL
 STT_MODEL = os.getenv("STT_MODEL", "gpt-4o-mini-transcribe")
 TTS_MODEL = os.getenv("TTS_MODEL", "gpt-4o-mini-tts")  # if your account supports; else change to a supported TTS model
 
